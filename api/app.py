@@ -10,13 +10,13 @@ logger = logging.getLogger('HELLO WORLD')
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = '../public/uploads'
+app.config['UPLOAD_FOLDER'] = '../public/images'
 CORS(app, expose_headers='Authorization')
 
 
-@app.route('/upload', methods=['POST'])
-def fileUpload():
-    target = os.path.join(app.config['UPLOAD_FOLDER'], 'test')
+@app.route('/upload/people', methods=['POST'])
+def faceUpload():
+    target = os.path.join(app.config['UPLOAD_FOLDER'], 'people')
     if not os.path.isdir(target):
         os.mkdir(target)
     logger.info("welcome to upload`")
@@ -25,7 +25,21 @@ def fileUpload():
     destination = "/".join([target, filename])
     file.save(destination)
     session['uploadFilePath'] = destination
-    response = {"fileName": filename, "filePath": f"/uploads/test/{filename}"}
+    response = {"fileName": filename, "filePath": f"/images/people/{filename}"}
+    return response
+
+@app.route('/upload/pics', methods=['POST'])
+def picUpload():
+    target = os.path.join(app.config['UPLOAD_FOLDER'], 'pics')
+    if not os.path.isdir(target):
+        os.mkdir(target)
+    logger.info("welcome to upload`")
+    file = request.files['file']
+    filename = secure_filename(file.filename)
+    destination = "/".join([target, filename])
+    file.save(destination)
+    session['uploadFilePath'] = destination
+    response = {"fileName": filename, "filePath": f"/images/pics/{filename}"}
     return response
 
 app.secret_key = 'my little big secret🤫'
